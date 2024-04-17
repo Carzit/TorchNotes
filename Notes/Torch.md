@@ -956,57 +956,371 @@ True
 True
 ```
 
-# Mathematical Pointwise Ops 数学逐点操作
+## Mathematical Pointwise Ops 数学逐点操作
 
-|     torch API      |        Tensor API         |           Alias           |                                                  Description                                                   |
-|:------------------:|:-------------------------:|:-------------------------:|:--------------------------------------------------------------------------------------------------------------:|
-|    torch.add()     |       Tensor.add()        |             /             |                                                       加                                                        |
-|    torch.sub()     |       Tensor.sub()        |         subtract          |                                                       减                                                        |
-|    torch.mul()     |       Tensor.mul()        |         multiply          |                                                       乘                                                        |
-|    torch.div()     |       Tensor.div()        |          divide           |                                                       除                                                        |
-|   torch.round()    |      Tensor.round()       |             /             |                                                      四舍五入                                                      |
-|    torch.ceil()    |       Tensor.ceil()       |             /             |                                                 大于或等于每个元素的最大整数                                                 |
-|   torch.floor()    |      Tensor.floor()       |             /             |                                                 小于或等于每个元素的最大整数                                                 |
-| torch.reciprocal() |    Tensor.reciprocal()    |             /             |                                                      取倒数                                                       |
-|  torch.positive()  |     Tensor.positive()     |             /             |                                                       取正                                                       |
-|    torch.neg()     |       Tensor.neg()        |         negative          |                                                       取负                                                       |   
-|    torch.abs()     |       Tensor.abs()        |         absolute          |                                                      绝对值                                                       |
-|    torch.sign()    |       Tensor.sign()       |            sgn            |                                                取符号，正为1，负为-1，零为0                                                |
-|   torch.trunc()    |      Tensor.trunc()       |            fix            |                                                     取截断整数                                                      |
-|    torch.frac()    |       Tensor.frac()       |             /             |                                                     取截断小数                                                      |
-|    torch.pow()     |       Tensor.pow()        |             /             |                                                       乘方                                                       |
-|   torch.square()   |      Tensor.square()      |             /             |                                                     平方 x^2                                                     |
-|    torch.sqrt()    |       Tensor.sqrt()       |             /             |                                                   开方 x^(1/2)                                                   |
-|   torch.rsqrt()    |      Tensor.rsqrt()       |             /             |                                                开方并取倒数 x^(-1/2)                                                 |
-|    torch.exp()     |       Tensor.exp()        |             /             |                                                      e^x                                                       |
-|    torch.exp2()    |       Tensor.exp2()       |             /             |                                                      2^x                                                       |
-|   torch.expm1()    |      Tensor.expm1()       |             /             |                                                     e^x-1                                                      |
-|    torch.log()     |       Tensor.log()        |             /             |                                                      lnx                                                       |
-|    torch.log2()    |       Tensor.log2()       |             /             |                                                      log2                                                      |
-|   torch.log10()    |      Tensor.log10()       |             /             |                                                     log10                                                      |
-|   torch.log1p()    |      Tensor.log1p()       |             /             |                                                    ln(1+x)                                                     |
-|    torch.sin()     |       Tensor.sin()        |             /             |                                                      sinx                                                      |
-|    torch.cos()     |       Tensor.cos()        |             /             |                                                      cosx                                                      |
-|    torch.tan()     |       Tensor.tan()        |             /             |                                                      tanx                                                      |
-|    torch.asin()    |       Tensor.asin()       |          arcsin           |                                                    arcsinx                                                     |
-|    torch.acos()    |       Tensor.acos()       |          arccos           |                                                    arccosx                                                     |
-|    torch.atan()    |       Tensor.atan()       |          arctan           |                                                    arctanx                                                     |
-|   torch.asinh()    |      Tensor.asinh()       |          arcsosh          |                                                双曲正弦 (e^x-e^x)/2                                                |
-|   torch.acosh()    |      Tensor.acosh()       |          arccosh          |                                                双曲余弦 (e^x+e^x)/2                                                |
-|   torch.atanh()    |      Tensor.atanh()       |          arctanh          |                                            双曲正切 (e^x-e^x)/(e^x+e^x)                                            |
-|  torch.deg2rad()   |     Tensor.deg2rad()      |             /             |                                                   角度制转换为弧度制                                                    |
-|  torch.rad2deg()   |     Tensor.rad2deg()      |             /             |                                                   弧度制转换为角度制                                                    |
-|   torch.lgamma()   |      Tensor.lgamma()      |             /             |                                                  ln(gamma(x))                                                  |
-|   torch.clamp()    |      Tensor.clamp()       |           clip            |                        将输入中的所有元素限制在 [ min, max ] 范围内。y=min(max(x,min_value),max_value)                         
-|    torch.lerp()    |       Tensor.lerp()       |                           |                                        插值 out=start+weight×(end−start)                                         |
-|  torch.sigmoid()   |     Tensor.sigmoid()      |    torch.special.expit    |                                                1 / (1 + e ^ -x)                                                |
-| torch.nan_to_num() |    Tensor.nan_to_num()    |             /             |将输入中的 NaN、正无穷大和负无穷大值分别替换为 nan、posinf 和 neginf 指定的值。默认情况下，NaN 替换为零，正无穷大替换为输入数据类型可表示的最大有限值，负无穷大替换为输入数据类型可表示的最小有限值 |
+|     torch API      |     Tensor API      |        Alias        |                                                   Description                                                   |
+|:------------------:|:-------------------:|:-------------------:|:---------------------------------------------------------------------------------------------------------------:|
+|    torch.add()     |    Tensor.add()     |          /          |                                                        加                                                        |
+|    torch.sub()     |    Tensor.sub()     |      subtract       |                                                        减                                                        |
+|    torch.mul()     |    Tensor.mul()     |      multiply       |                                                        乘                                                        |
+|    torch.div()     |    Tensor.div()     |       divide        |                                                        除                                                        |
+|   torch.round()    |   Tensor.round()    |          /          |                                                      四舍五入                                                       |
+|    torch.ceil()    |    Tensor.ceil()    |          /          |                                                 大于或等于每个元素的最大整数                                                  |
+|   torch.floor()    |   Tensor.floor()    |          /          |                                                 小于或等于每个元素的最大整数                                                  |
+| torch.reciprocal() | Tensor.reciprocal() |          /          |                                                       取倒数                                                       |
+|  torch.positive()  |  Tensor.positive()  |          /          |                                                       取正                                                        |
+|    torch.neg()     |    Tensor.neg()     |      negative       |                                                       取负                                                        |   
+|    torch.abs()     |    Tensor.abs()     |      absolute       |                                                       绝对值                                                       |
+|    torch.sign()    |    Tensor.sign()    |         sgn         |                                                取符号，正为1，负为-1，零为0                                                 |
+|   torch.trunc()    |   Tensor.trunc()    |         fix         |                                                      取截断整数                                                      |
+|    torch.frac()    |    Tensor.frac()    |          /          |                                                      取截断小数                                                      |
+|    torch.pow()     |    Tensor.pow()     |          /          |                                                       乘方                                                        |
+|   torch.square()   |   Tensor.square()   |          /          |                                                     平方 x^2                                                      |
+|    torch.sqrt()    |    Tensor.sqrt()    |          /          |                                                   开方 x^(1/2)                                                    |
+|   torch.rsqrt()    |   Tensor.rsqrt()    |          /          |                                                 开方并取倒数 x^(-1/2)                                                 |
+|    torch.exp()     |    Tensor.exp()     |          /          |                                                       e^x                                                       |
+|    torch.exp2()    |    Tensor.exp2()    |          /          |                                                       2^x                                                       |
+|   torch.expm1()    |   Tensor.expm1()    |          /          |                                                      e^x-1                                                      |
+|    torch.log()     |    Tensor.log()     |          /          |                                                       lnx                                                       |
+|    torch.log2()    |    Tensor.log2()    |          /          |                                                     log2 x                                                      |
+|   torch.log10()    |   Tensor.log10()    |          /          |                                                     log10 x                                                     |
+|   torch.log1p()    |   Tensor.log1p()    |          /          |                                                     ln(1+x)                                                     |
+|   torch.hypot()    |   Tensor.hypot()    |          /          |                                                 (x^2 + y^2)^0.5                                                 |
+| torch.logaddexp()  | Tensor.logaddexp()  |          /          |                                                  ln(e^x + e^y)                                                  |
+| torch.logaddexp2() | Tensor.logaddexp2() |          /          |                                                 log2(e^x + e^y)                                                 |
+|    torch.sin()     |    Tensor.sin()     |          /          |                                                      sinx                                                       |
+|    torch.cos()     |    Tensor.cos()     |          /          |                                                      cosx                                                       |
+|    torch.tan()     |    Tensor.tan()     |          /          |                                                      tanx                                                       |
+|    torch.asin()    |    Tensor.asin()    |       arcsin        |                                                     arcsinx                                                     |
+|    torch.acos()    |    Tensor.acos()    |       arccos        |                                                     arccosx                                                     |
+|    torch.atan()    |    Tensor.atan()    |       arctan        |                                                     arctanx                                                     |
+|   torch.asinh()    |   Tensor.asinh()    |       arcsosh       |                                                双曲正弦 (e^x-e^x)/2                                                 |
+|   torch.acosh()    |   Tensor.acosh()    |       arccosh       |                                                双曲余弦 (e^x+e^x)/2                                                 |
+|   torch.atanh()    |   Tensor.atanh()    |       arctanh       |                                            双曲正切 (e^x-e^x)/(e^x+e^x)                                             |
+|  torch.deg2rad()   |  Tensor.deg2rad()   |          /          |                                                    角度制转换为弧度制                                                    |
+|  torch.rad2deg()   |  Tensor.rad2deg()   |          /          |                                                    弧度制转换为角度制                                                    |
+|   torch.lgamma()   |   Tensor.lgamma()   |          /          |                                                  ln(gamma(x))                                                   |
+|   torch.clamp()    |   Tensor.clamp()    |        clip         |                         将输入中的所有元素限制在 [ min, max ] 范围内。y=min(max(x,min_value),max_value)                         
+|    torch.lerp()    |    Tensor.lerp()    |                     |                                         插值 out=start+weight×(end−start)                                         |
+|  torch.sigmoid()   |  Tensor.sigmoid()   | torch.special.expit |                                                1 / (1 + e ^ -x)                                                 |
+| torch.nan_to_num() | Tensor.nan_to_num() |          /          | 将输入中的 NaN、正无穷大和负无穷大值分别替换为 nan、posinf 和 neginf 指定的值。默认情况下，NaN 替换为零，正无穷大替换为输入数据类型可表示的最大有限值，负无穷大替换为输入数据类型可表示的最小有限值 |
+
+
+## Reduction Operation 约简操作
+|       torch API       |       Tensor API       | dim&keepdim Args |     Description      |
+|:---------------------:|:----------------------:|:----------------:|:--------------------:|
+|    torch.argmax()     |    Tensor.argmax()     |        √         |        最大值的索引        |
+|    torch.argmin()     |    Tensor.argmin()     |        √         |        最小值的索引        |
+|     torch.amax()      |     Tensor.amax()      |        √         |        最大值的数值        |
+|     torch.amin()      |     Tensor.amin()      |        √         |        最小值的数值        |
+|    torch.aminmax()    |    Tensor.aminmax()    |        √         |      最小值和最大值的数值      |
+|      torch.max()      |      Tensor.max()      |        √         |      最大值的数值和索引       |
+|      torch.min()      |      Tensor.min()      |        √         |      最小值的数值和索引       |
+|      torch.all()      |      Tensor.all()      |        √         |    元素是否全为True(非0)    |
+|      torch.any()      |      Tensor.any()      |        √         |    元素是否存在True(非0)    |
+| torch.count_nonzero() | Tensor.count_nonzero() |        √         |        非0元素个数        |
+|     torch.mean()      |     Tensor.mean()      |        √         |      计算所有元素的均值       |
+|    torch.nanmean()    |    Tensor.nanmean()    |        √         |    计算所有非NaN元素的均值     |
+|      torch.sum()      |      Tensor.sum()      |        √         |      计算所有元素的均值       |
+|    torch.nansum()     |    Tensor.nansum()     |        √         |    计算所有非NaN元素的总和     |
+|      torch.var()      |      Tensor.var()      |        √         |      计算所有元素的总和       |
+|   torch.var_mean()    |           /            |        √         |   计算所有非NaN元素的方差和均值   |
+|      torch.std()      |      Tensor.std()      |        √         |      计算所有元素的标准差      |
+|   torch.std_mean()    |           /            |        √         |  计算所有非NaN元素的标准差和均值   |
+|    torch.median()     |    Tensor.median()     |        √         |      计算所有元素的中位数      |
+|   torch.nanmedian()   |   Tensor.nanmedian()   |        √         |    计算所有非NaN元素的中位数    |
+|   torch.quantile()    |   Tensor.quantile()    |        √         |     计算所有元素的n分位数      |
+|  torch.nanquantile()  |  Tensor.nanquantile()  |        √         |   计算所有非NaN元素的n分位数    |
+|     torch.prod()      |     Tensor.prod()      |        √         |       计算所有元素相乘       |
+|     torch.norm()      |     Tensor.norm()      |        √         |      计算张量的n阶范数       |
+|     torch.dist()      |     Tensor.dist()      |        ×         | 计算两个张量的距离（张量之差的n阶范数） |
+
+
+> ### 关于dim与keepdim  
+> 当`dim`未指定时，即对张量全局进行操作（计算）。`dim`参数指定张量在指定维度上进行计算，可以指定1个或多个维度。  
+> 例如，对一个形状为[2,3,4]的张量，指定`dim=1`，返回张量的形状为`[2,4]`，每次操作即对一个形状为[3]的张量切片进行计算。指定`dim=(0,1)`，返回张量的形状为`[4]`，每次操作即对一个形状为`[2,3]`的张量切片进行计算。  
+> `keepdim=True`时则会保持输出张量与原输入张量的维度数一致，上例返回的形状则会变为`[2,1,4]`和`[1,1,4]`，相当于在原本因操作而失去的维度上进行`unsqueeze`。
 
 
 
+### torch.argmax(input, dim=None, keepdim=False) -> LongTensor
+获取`input`张量上最大值的索引。  
+若`input`张量的形状为[d_1,d_2,d_3,...,d_n], 指定`dim`维长度为d_dim，返回张量形状为[d_1, d_2, ..., d_{dim-1}, d_{dim+1}, ..., d_n]。  
+#### Args
+- input: Tensor – the input tensor.  
+- dim: Int or List – 进行索引的维度。为None时则将张量展平（Flatten）后再进行操作  
+- keepdim: bool – 输出张量是否保持与输入相同的维度  
+#### Examples
+```python
+>>> a = torch.randn(4, 4)
+>>> a
+tensor([[ 1.3398,  0.2663, -0.2686,  0.2450],
+        [-0.7401, -0.8805, -0.3402, -1.1936],
+        [ 0.4907, -1.3948, -1.0691, -0.3132],
+        [-1.6092,  0.5419, -0.2993,  0.3195]])
+>>> torch.argmax(a)
+tensor(0)
+>>> torch.argmax(a, dim=1)
+tensor([ 0,  2,  0,  1])
+```
+
+### torch.amax(input, dim=None, keepdim=False) -> LongTensor
+获取`input`张量上最大值的数值。  
+若`input`张量的形状为[d_1,d_2,d_3,...,d_n], 指定`dim`维长度为d_dim，返回张量形状为[d_1, d_2, ..., d_{dim-1}, d_{dim+1}, ..., d_n]。
+#### Args
+- input: Tensor – the input tensor.  
+- dim: Int or List – 进行索引的维度。为None时则将张量展平（Flatten）后再进行操作(即返回张量全局最大值)。指定dim时即返回沿dim维的各张量切片上最大值的索引。   
+- keepdim: bool – 输出张量是否保持与输入相同的维度  
+> `amax()` 在相等值之间均匀分布梯度，而 `max(dim)`仅将梯度传播到源张量中的单个索引。
+#### Examples
+```python
+>>> a = torch.randn(4, 4)
+>>> a
+tensor([[ 0.8177,  1.4878, -0.2491,  0.9130],
+        [-0.7158,  1.1775,  2.0992,  0.4817],
+        [-0.0053,  0.0164, -1.3738, -0.0507],
+        [ 1.9700,  1.1106, -1.0318, -1.0816]])
+>>> torch.amax(a, 1)
+tensor(2.0992)
+>>> torch.amax(a, 1)
+tensor([1.4878, 2.0992, 0.0164, 1.9700])
+```
+
+### torch.aminmax(input, *, dim=None, keepdim=False) -> namedtuple[values:., indices:.]
+获取`input`张量上最大值和最小值的数值。  
+若`input`张量的形状为[d_1,d_2,d_3,...,d_n], 指定`dim`维长度为d_dim，返回张量形状为[d_1, d_2, ..., d_{dim-1}, d_{dim+1}, ..., d_n]。
+#### Args
+- input: Tensor – the input tensor.  
+- dim: Int or List – 进行索引的维度。为None时则将张量展平（Flatten）后再进行操作(即返回张量全局最大值)。指定dim时即返回沿dim维的各张量切片上最大值的数值。   
+- keepdim: bool – 输出张量是否保持与输入相同的维度  
+#### Examples
+```python
+>>> a = torch.randn(4, 4)
+>>> a
+tensor([[ 0.8177,  1.4878, -0.2491,  0.9130],
+        [-0.7158,  1.1775,  2.0992,  0.4817],
+        [-0.0053,  0.0164, -1.3738, -0.0507],
+        [ 1.9700,  1.1106, -1.0318, -1.0816]])
+>>> torch.aminmax(a)
+torch.return_types.aminmax(
+        min=tensor(-1.3738),
+        max=tensor(2.0992)
+        )
+>>> torch.aminmax(a, dim=1)
+torch.return_types.max(
+        min=tensor([-0.2491, -0.7158, -1.3738, -1.0816]),
+        max=tensor([1.4878, 2.0992, 0.0164, 1.9700])
+        )
+```
+
+### torch.max(input, dim=None, keepdim=False) -> namedtuple[values:., indices:.]
+获取`input`张量上最大值的数值和索引。  
+若`input`张量的形状为[d_1,d_2,d_3,...,d_n], 指定`dim`维长度为d_dim，返回张量形状为[d_1, d_2, ..., d_{dim-1}, d_{dim+1}, ..., d_n]。  
+#### Args
+- input: Tensor – the input tensor.  
+- dim: Int or List – 进行索引的维度。为None时则将张量展平（Flatten）后再进行操作(即返回张量全局最大值)，指定dim时即返回沿dim维的各张量切片上最大值的数值和索引。    
+- keepdim: bool – 输出张量是否保持与输入相同的维度（相当于额外unsqueeze操作，维度相同但形状不相同）  
+> `amax()` 在相等值之间均匀分布梯度，而 `max(dim)`仅将梯度传播到源张量中的单个索引。
+#### Examples
+```python
+>>> a = torch.randn(4, 4)
+>>> a
+tensor([[ 0.8177,  1.4878, -0.2491,  0.9130],
+        [-0.7158,  1.1775,  2.0992,  0.4817],
+        [-0.0053,  0.0164, -1.3738, -0.0507],
+        [ 1.9700,  1.1106, -1.0318, -1.0816]])
+>>> torch.max(a)
+    
+>>> torch.max(a, 1)
+torch.return_types.max(
+        values=tensor([1.4878, 2.0992, 0.0164, 1.9700]),
+        indices=tensor([ 0,  2,  0,  1])
+        )
+```
+
+> ###  类似地：  
+> `torch.argmin`获取张量最小值索引   
+> `torch.amin`获取张量最小值数值  
+> `torch.min`获取张量最小值数值和索引  
+
+### torch.all(input, dim=None, keepdim=False) -> Tensor
+判断张量各是否全为True。  
+若`input`张量的形状为[d_1,d_2,d_3,...,d_n], 指定`dim`维长度为d_dim，返回张量形状为[d_1, d_2, ..., d_{dim-1}, d_{dim+1}, ..., d_n]。  
+#### Args
+- input: Tensor – the input tensor.  
+- dim: Int or List – 进行索引的维度。为None时则将张量展平（Flatten）后再进行操作(即返回张量全局是否均为True)；指定dim时即返回沿dim维的各张量切片是否均为True。  
+- keepdim: bool – 输出张量是否保持与输入相同的维度（相当于额外unsqueeze操作，维度相同但形状不相同）  
+#### Examples
+```python
+>>> a = torch.rand(4, 2).bool()
+>>> a
+tensor([[True, True],
+        [True, False],
+        [True, True],
+        [True, True]], dtype=torch.bool)
+>>> torch.all(a, dim=1)
+tensor([ True, False,  True,  True], dtype=torch.bool)
+>>> torch.all(a, dim=0)
+tensor([ True, False], dtype=torch.bool
+```
+
+### torch.any(input, dim=None, keepdim=False) -> Tensor
+判断张量各是否有元素为True。  
+若`input`张量的形状为[d_1,d_2,d_3,...,d_n], 指定`dim`维长度为d_dim，返回张量形状为[d_1, d_2, ..., d_{dim-1}, d_{dim+1}, ..., d_n]。  
+#### Args
+- input: Tensor – the input tensor.  
+- dim: Int or List – 进行索引的维度。为None时则将张量展平（Flatten）后再进行操作(即返回张量全局是否均为True)；指定dim时即返回沿dim维的各张量切片是否有元素为True。  
+- keepdim: bool – 输出张量是否保持与输入相同的维度（相当于额外unsqueeze操作，维度相同但形状不相同）  
+#### Examples
+```python
+>>> a = torch.randn(4, 2) < 0
+>>> a
+tensor([[ True,  True],
+        [False,  True],
+        [ True,  True],
+        [False, False]])
+>>> torch.any(a, 1)
+tensor([ True,  True,  True, False])
+>>> torch.any(a, 0)
+tensor([True, True])
+```
 
 
 
+### torch.mean(input, dim=None, keepdim=False) -> Tensor
+获取张量各元素的均值。  
+若`input`张量的形状为[d_1,d_2,d_3,...,d_n], 指定`dim`维长度为d_dim，返回张量形状为[d_1, d_2, ..., d_{dim-1}, d_{dim+1}, ..., d_n]。  
+#### Args
+- input: Tensor  
+- dim: Int or List – 进行索引的维度。为None时则将张量展平（Flatten）后再进行操作(即返回张量全局均值)；指定dim时即返回沿dim维的各张量切片的均值。    
+- keepdim: bool – 输出张量是否保持与输入相同的维度（相当于额外unsqueeze操作，维度相同但形状不相同）
+#### Examples
+```python
+>>> a = torch.randn(4, 4)
+>>> a
+tensor([[-0.3841,  0.6320,  0.4254, -0.7384],
+        [-0.9644,  1.0131, -0.6549, -1.4279],
+        [-0.2951, -1.3350, -0.7694,  0.5600],
+        [ 1.0842, -0.9580,  0.3623,  0.2343]])
+>>> torch.mean(a)
+tensor(-0.2010)
+>>> torch.mean(a, 1)
+tensor([-0.0163, -0.5085, -0.4599,  0.1807])
+>>> torch.mean(a, 1, True)
+tensor([[-0.0163],
+        [-0.5085],
+        [-0.4599],
+        [ 0.1807]])
+```
+
+### torch.sum(input, dim=None, keepdim=False) -> Tensor
+获取张量各元素的总和。    
+若`input`张量的形状为[d_1,d_2,d_3,...,d_n], 指定`dim`维长度为d_dim，返回张量形状为[d_1, d_2, ..., d_{dim-1}, d_{dim+1}, ..., d_n]。    
+#### Args
+- input: Tensor    
+- dim: Int or List – 进行索引的维度。为None时则将张量展平（Flatten）后再进行操作(即返回张量全局均值)；指定dim时即返回沿dim维的各张量切片的均值。      
+- keepdim: bool – 输出张量是否保持与输入相同的维度（相当于额外unsqueeze操作，维度相同但形状不相同）  
+#### Examples
+```python
+>>> a = torch.randn(4, 4)
+>>> a
+tensor([[ 0.0569, -0.2475,  0.0737, -0.3429],
+        [-0.2993,  0.9138,  0.9337, -1.6864],
+        [ 0.1132,  0.7892, -0.1003,  0.5688],
+        [ 0.3637, -0.9906, -0.4752, -1.5197]])
+>>> torch.sum(a, 1)
+tensor([-0.4598, -0.1381,  1.3708, -2.6217])
+>>> b = torch.arange(4 * 5 * 6).view(4, 5, 6)
+>>> torch.sum(b, (2, 1))
+tensor([  435.,  1335.,  2235.,  3135.])
+```
+
+### torch.var(input, dim=None, *, correction=1, keepdim=False, out=None) -> Tensor
+获取张量各元素的方差。  
+Var(X) = Σ(x- E(X))^2 / (N-correction)，其中N为元素个数，correction为修正项。  
+#### Args
+- - input: Tensor       
+- - dim: Int or List – 进行索引的维度。为None时则将张量展平（Flatten）后再进行操作(即返回张量全局是否均为True)；指定dim时即返回沿dim维的各张量切片的方差。  
+- - correction: int - 修正项，默认使用Bessel修正，为1。  
+- - keepdim: bool – 输出张量是否保持与输入相同的维度（相当于额外unsqueeze操作，维度相同但形状不相同）      
+#### Examples
+```python
+>>> a = torch.tensor(
+...     [[ 0.2035,  1.2959,  1.8101, -0.4644],
+...      [ 1.5027, -0.3270,  0.5905,  0.6538],
+...      [-1.5745,  1.3330, -0.5596, -0.6548],
+...      [ 0.1264, -0.5080,  1.6420,  0.1992]])
+>>> torch.var(a, dim=1, keepdim=True)
+tensor([[1.0631],
+        [0.5590],
+        [1.4893],
+        [0.8258]])
+```
+
+
+
+### torch.norm(input, p='fro', dim=None, keepdim=False)->Tensor
+返回张量的p阶范数。  
+||X||p = (Σ|x|^p)^(1/p)    
+特别地，当p=0时，||X||p为X中非0元素的个数；当p=float("inf")时，||X||p=max(|x|)     
+若`input`张量的形状为[d_1,d_2,d_3,...,d_n], 指定`dim`维长度为d_dim，返回张量形状为[d_1, d_2, ..., d_{dim-1}, d_{dim+1}, ..., d_n]。    
+#### Args
+- input: Tensor     
+- p: int or str - 范数的阶数。在所有情况下，Frobenius 范数都会产生与 p=2 相同的结果，除非 dim 是三个或更多 dim 的列表，在这种情况下，Frobenius 范数会引发错误。Nuclear范数只能在精确的两个维度上计算。  
+- dim: Int or List – 进行索引的维度。为None时则将张量展平（Flatten）后再进行操作(即返回张量全局是否均为True)；指定dim时即返回沿dim维的各张量切片的范数。    
+- keepdim: bool – 输出张量是否保持与输入相同的维度（相当于额外unsqueeze操作，维度相同但形状不相同）    
+#### Examples
+```python
+>>> import torch
+>>> a = torch.arange(9, dtype= torch.float) - 4
+>>> b = a.reshape((3, 3))
+>>> torch.norm(a)
+tensor(7.7460)
+>>> torch.norm(b)
+tensor(7.7460)
+>>> torch.norm(a, float('inf'))
+tensor(4.)
+>>> torch.norm(b, float('inf'))
+tensor(4.)
+>>> c = torch.tensor([[ 1, 2, 3], [-1, 1, 4]] , dtype=torch.float)
+>>> torch.norm(c, dim=0)
+tensor([1.4142, 2.2361, 5.0000])
+>>> torch.norm(c, dim=1)
+tensor([3.7417, 4.2426])
+>>> torch.norm(c, p=1, dim=1)
+tensor([6., 6.])
+>>> d = torch.arange(8, dtype=torch.float).reshape(2, 2, 2)
+>>> torch.norm(d, dim=(1, 2))
+tensor([ 3.7417, 11.2250])
+>>> torch.norm(d[0, :, :]), torch.norm(d[1, :, :])
+(tensor(3.7417), tensor(11.2250))
+```
+
+### torch.dist(input, other, p=2) -> Tensor
+返回两个张量间的距离。即张量`input - output`的p阶范数。     
+||X||p = (Σ|x|^p)^(1/p)  
+特别地，当p=0时，||X||p为X中非0元素的个数；当p=float("inf")时，||X||p=max(|x|)   
+#### Args
+- input: Tensor   
+- other: Tensor  
+- p: int - 范数的阶数  
+#### Examples
+```python
+>>> x = torch.randn(4)
+>>> x
+tensor([-1.5393, -0.8675,  0.5916,  1.6321])
+>>> y = torch.randn(4)
+>>> y
+tensor([ 0.0967, -1.0511,  0.6295,  0.8360])
+>>> torch.dist(x, y, 3.5)
+tensor(1.6727)
+>>> torch.dist(x, y, 3)
+tensor(1.6973)
+>>> torch.dist(x, y, 0)
+tensor(4.)
+>>> torch.dist(x, y, 1)
+tensor(2.6537)
+```
 
 
 
