@@ -1322,7 +1322,118 @@ tensor(4.)
 tensor(2.6537)
 ```
 
+## Distribution
 
+### torch.distributions.distribution.Distribution
+概率分布的抽象基类。
+
+#### property
+- mean 分布均值
+- mode 分布众数
+- event_shape 不考虑batcch，每次采样返回的形状
+- batch_shape 批处理形状
+- stddev 分布标准差
+- variance 分布方差
+- support 返回表示此分布support的 Constraint 对象。
+
+#### cdf(value)
+累计分布函数
+
+#### icdf(value)
+逆累积分布函数
+
+#### log_pdf(value)
+概率密度函数
+
+#### entropy()
+返回分布熵，通过`batch_shape`进行批处理。  
+H(p) = -Σp(x)log[p(x)]
+
+#### perplexity()
+返回分布困惑度，通过`batch_shape`进行批处理。  
+PP(p) = e^H(p) = Π p(x)^[-p(x)]
+
+
+#### sample(sample_shape=torch.Size([]))
+生成`sample_shape`形状的样本。  
+如果分布参数是批处理的，则生成`sample_shape`形状的样本批次。
+
+#### sample_n(n)
+生成 n 个样本。  
+如果分布参数是批处理的，则生成n批样本。
+
+#### rsample(sample_shape=torch.Size([]))
+重置参数采样。
+
+#### enumerate_support(expand=True)
+返回包含离散分布支持的所有值的张量。结果将在维度 0 上进行枚举，因此结果的形状将为 `(cardinality,) + batch_shape + event_shape` （对于单变量分布, `event_shape = ()` ）。  
+注意，这枚举了锁步 `[[0, 0], [1, 1], ...]` 中的所有批处理张量。当 `expand=False` 时，枚举沿着 dim 0 进行，但剩余的批次维度是单例维度`[[0], [1], ...` 。   
+要迭代完整的笛卡尔积，请使用 `itertools.product(m.enumerate_support()`。
+
+#### expand(batch_shape, _instance=None)
+批处理扩展。  
+当Distribution本身`batch_size`不为`[]`时，注意传入`batch_shape`的末尾几个维度形状要与原形状相同。例如原本`batch_size`为`[4,3]`，扩展形状应为`[..., 4, 3]`。
+
+> 推荐看这篇博客 https://bochang.me/blog/posts/pytorch-distributions/
+
+### Distributions 
+>施工中
+
+|  Distribution   |               Description                |                  Parameters                  |
+|:---------------:|:----------------------------------------:|:--------------------------------------------:|
+|Bernoulli|               伯努利分布（二项分布）                |                 probs:[0,1]                  |
+|Beta|                   贝塔分布                   | concentration1:(0,+∞), concentration0:(0,+∞) |
+|Binomial|                   二项分布                   |      total_count:int[0,+∞), probs:[0,1]      |
+|Categorical|                   分类分布                   |          probs:(each element)[0,+∞)          |
+|Cauchy|                   柯西分布                   |             loc:R, scale:(0,+∞)              |
+|Chi2|                   卡方分布                   |                  df:(0,+∞)                   
+|ContinuousBernoulli| 连续伯努利分布 https://arxiv.org/abs/1907.06845 |                 probs:(0,1)                  |
+|Dirichlet|                  狄利克雷分布                  |      concentration:(each element)(0,+∞)      |
+|Exponential|                   指数分布                   |                 rate:(0,+∞)                  |
+|FisherSnedecor|                   F分布                    |            df1:(0,+∞), df2:(0,+∞)            |
+|Gamma|                   伽马分布                   |      concentration:(0,+∞), rate:(0,+∞)       |
+|Geometric|                   几何分布                   |                 probs:(0,1]                  |
+|Gumbel|             耿贝尔分布（I型广义极值分布）              |             loc:R, scale:(0,+∞)              |
+|HalfCauchy| 半柯西分布 |                 scale:(0,+∞)                 |
+|HalfNormal| 半正态分布 |                 scale:(0,+∞)                 |
+|InverseGamma| 逆伽马分布 |      concentration:(0,+∞), rate:(0,+∞)       |
+|Kumaraswamy| Kumaraswamy分布 | concentration1:(0,+∞), concentration0:(0,+∞) |
+|LKJCholesky| 低秩Cholesky因子的LKJ分布 | 
+|Laplace| 拉普拉斯分布 |             loc:R, scale:(0,+∞)              |
+|  LogNormal  | 对数正态分布 |                       loc:R, scale:(0,+∞)                       |
+|Multinomial| 多项分布 | total_count:int[0,+∞), probs:[0,1]
+|MultivariateNormal| 多元正态分布 | loc, covariance_matrix, precision_matrix, scale_tril |
+|NegativeBinomial|                  负二项分布                   |       total_count:[0,+∞), probs:[0,1)        |
+|Normal|                   正态分布                   |             loc:R, scale:(0,+∞)              |
+|OneHotCategorical|
+|Pareto| 帕累托分布 | scale:(0,+∞), alpha:(0,+∞) 
+|Poisson|                   泊松分布                   |                 rate:[0,+∞)                  |
+|StudentT|                   T分布                    |                  df:(0,+∞)                   |
+|Uniform|                   随机分布                   |                 low:R high:R                 |
+|VonMises| 冯·米塞斯分布(循环正态分布) | loc:R, concentration:(0,+∞) |
+|Weibull| 韦伯分布 | scale:(0,+∞), concentration:(0,+∞) |
+|Wishart| 威沙特分布 | df, covariance_matrix, precision_matrix, scale_tril|
+
+> logits - the log-odds of sampling 赔率的对数。  
+> logits与probs的转换公式为：logits = ln[probs/(1-probs)], probs = 1/(1+e^-logits)
+> 在Categorical分布中，logits = ln(probs), 输入的probs会被自动softmax到和为1，然后被对应分配给从0开始的自然数
+> HalfCauchy分布：X ~ Cauchy(0, scale),Y = |X| ~ HalfCauchy(scale)
+> HalfNormal分布：X ~ Normal(0, scale), Y = |X| ~ HalfNormal(scale)
+> InverseGamma分布：X ~ Gamma(concentration, rate), Y = 1 / X ~ InverseGamma(concentration, rate)
+> 对数正态分布：X ~ Normal(loc, scale), Y = exp(X) ~ LogNormal(loc, scale)
+> 在Multinomial分布中，logits = ln(probs), 输入的probs会被自动softmax到和为1，然后被对应分配给从0开始的自然数
+
+> Independent(base_distribution, reinterpreted_batch_ndims, validate_args=None) 独立同分布（这主要用于改变 log_prob() 结果的形状。例如，要创建与多元正态分布形状相同的对角正态分布）
+> MixtureSameFamily(mixture_distribution, component_distribution, validate_args=None) MixtureSameFamily 分布实现（批次）混合分布，其中所有组件都来自同一分布类型的不同参数化。它由分类“选择分布”（针对 k 个分量）和分量分布进行参数化，即具有最右侧批次形状（等于 [k]）的分布，该分布对每个（批次）分量进行索引。
+
+
+## Tensorboard
+
+### tensorboard --logdir
+指定日志文件夹，打开tensorboard
+
+### torch.utils.tensorboard.writer.SummaryWriter
+日志写入类。
 
 
 
