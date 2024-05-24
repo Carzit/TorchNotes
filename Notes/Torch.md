@@ -457,6 +457,24 @@ tensor([2, 1, 0, 3])
 >
 >BF16 （BFloat16）：BF16 也使用 16 位，但发行版不同。它有 1 个符号位，指数有 8 位，尾数有 7 位。此格式旨在为小值保留更高的精度，同时仍能容纳各种数字。
 
+### Type Info
+类似Numpy的typeinfo
+
+| Class |    Attribute    |        description         |
+|:-----:|:---------------:|:--------------------------:|
+| finfo |      bits       |      该类型占用的字节数             |
+| finfo |       eps       | 满足 1.0 + eps != 1 的最小可表示数字 |
+| finfo |       max       |          最大的可表示数字          |
+| finfo |       min       |          最小的可表示数字          |
+| finfo |      tiny       | 最小的positive normal number  |
+| finfo | samllest_normal |             同上             |
+| finfo |   resolution    |        该类型的近似十进制精度         |
+| iinfo |      bits       |      该类型占用的字节数             |
+| iinfo |       max       |          最大的可表示数字          |
+| iinfo |       min       |          最小的可表示数字          |
+
+> 创建`finfo`实例，不指定数值类型时，使用默认浮点精度。即相当于`torch.finfo(torch.get_default_dtype())`。  
+> `iinfo`则不支持。
 
 ### tensor.type() -> str
 获取张量的数值类型。  
@@ -578,8 +596,46 @@ tensor([[  0, 202, 154,  59, 182, 243, 253, 188, 185, 252, 191,  63, 240,  22,
 torch.Size([4, 16])
 ```
 
-## Tensor Dimension View Operations
 
+
+## Tensor Dimension View Operations
+>PyTorch 允许张量成为现有张量的视图`view`。视图张量与其基本张量共享相同的基础数据。支持视图避免了显式数据复制，从而使我们能够进行快速且内存高效的shape变化、切片和逐元素操作。
+> 常见的视图操作包括:  
+> Tensor.__getitem__(), 
+> adjoint(), 
+> as_strided(), 
+> detach(), 
+> diagonal(), 
+> expand(), 
+> expand_as(), 
+> movedim(), 
+> narrow(), 
+> permute(), 
+> select(), 
+> squeeze(), 
+> transpose(), 
+> t(), 
+> Tensor.T, 
+> Tensor.H, 
+> Tensor.mT, 
+> Tensor.mH, 
+> Tensor.real, 
+> Tensor.imag, 
+> view_as_real(), 
+> unflatten(), 
+> unfold(), 
+> unsqueeze(), 
+> view(), 
+> view_as(), 
+> unbind(), 
+> split(), 
+> hsplit(), 
+> vsplit(), 
+> tensor_split(), 
+> split_with_sizes(), 
+> swapaxes(), 
+> swapdims(), 
+> chunk()
 ### Tensor.shape -> torch.Size
 获取张量的形状
 
@@ -700,6 +756,28 @@ torch.Size([2, 3, 5])
 >>> torch.permute(x, (2, 0, 1)).size()
 torch.Size([5, 2, 3])
 ```
+
+### Tensor.expand(*sizes) -> Tensor
+返回自张量的新视图
+可以将Tensor中size为1的维度(singleton dimension)扩展到更大的size。size大于1的维度无法扩展。传递 -1 作为维度的大小意味着不更改该维度的大小。   
+还可以将Tensor扩展到新的维度，注意新的维度会必须附加在前面。对于新尺寸，大小不能设置为-1。  
+注意并不存在`torch.expand`函数，expand仅作为Tensor的方法。
+
+#### Examples
+```python
+>>> x = torch.tensor([[1], [2], [3]])
+>>> x.size()
+torch.Size([3, 1])
+>>> x.expand(3, 4)
+tensor([[ 1,  1,  1,  1],
+        [ 2,  2,  2,  2],
+        [ 3,  3,  3,  3]])
+>>> x.expand(-1, 4)   # -1 means not changing the size of that dimension
+tensor([[ 1,  1,  1,  1],
+        [ 2,  2,  2,  2],
+        [ 3,  3,  3,  3]])
+```
+
 
 ## Tensor Stack and Split Operations
 
@@ -1321,8 +1399,11 @@ tensor(4.)
 >>> torch.dist(x, y, 1)
 tensor(2.6537)
 ```
+## Torch linalg
+### torch.linalg.norm(A, ord=None, dim=None, keepdim=False, *, out=None, dtype=None) -> Tensor
+计算
 
-## Distribution
+## Torch Distribution
 
 ### torch.distributions.distribution.Distribution
 概率分布的抽象基类。
@@ -1372,9 +1453,9 @@ PP(p) = e^H(p) = Π p(x)^[-p(x)]
 
 #### expand(batch_shape, _instance=None)
 批处理扩展。  
-当Distribution本身`batch_size`不为`[]`时，注意传入`batch_shape`的末尾几个维度形状要与原形状相同。例如原本`batch_size`为`[4,3]`，扩展形状应为`[..., 4, 3]`。
-
-> 推荐看这篇博客 https://bochang.me/blog/posts/pytorch-distributions/
+类似Tensor.expand()方法，
+可以将Tensor中size为1的维度(singleton dimension)扩展到更大的size，传递 -1 作为维度的大小意味着不更改该维度的大小。还可以将Tensor扩展到新的维度，注意新的维度会必须附加在前面。对于新尺寸，大小不能设置为-1。  
+> 可以看这篇博客 https://bochang.me/blog/posts/pytorch-distributions/
 
 ### Distributions 
 >施工中
@@ -1415,28 +1496,47 @@ PP(p) = e^H(p) = Π p(x)^[-p(x)]
 |Wishart| 威沙特分布 | df, covariance_matrix, precision_matrix, scale_tril|
 
 > logits - the log-odds of sampling 赔率的对数。  
-> logits与probs的转换公式为：logits = ln[probs/(1-probs)], probs = 1/(1+e^-logits)
-> 在Categorical分布中，logits = ln(probs), 输入的probs会被自动softmax到和为1，然后被对应分配给从0开始的自然数
-> HalfCauchy分布：X ~ Cauchy(0, scale),Y = |X| ~ HalfCauchy(scale)
-> HalfNormal分布：X ~ Normal(0, scale), Y = |X| ~ HalfNormal(scale)
-> InverseGamma分布：X ~ Gamma(concentration, rate), Y = 1 / X ~ InverseGamma(concentration, rate)
-> 对数正态分布：X ~ Normal(loc, scale), Y = exp(X) ~ LogNormal(loc, scale)
-> 在Multinomial分布中，logits = ln(probs), 输入的probs会被自动softmax到和为1，然后被对应分配给从0开始的自然数
+> logits与probs的转换公式为：logits = ln[probs/(1-probs)], probs = 1/(1+e^-logits)  
 
-> Independent(base_distribution, reinterpreted_batch_ndims, validate_args=None) 独立同分布（这主要用于改变 log_prob() 结果的形状。例如，要创建与多元正态分布形状相同的对角正态分布）
-> MixtureSameFamily(mixture_distribution, component_distribution, validate_args=None) MixtureSameFamily 分布实现（批次）混合分布，其中所有组件都来自同一分布类型的不同参数化。它由分类“选择分布”（针对 k 个分量）和分量分布进行参数化，即具有最右侧批次形状（等于 [k]）的分布，该分布对每个（批次）分量进行索引。
+> 在Categorical分布中，logits = ln(probs), 输入的probs会被自动softmax到和为1，然后被对应分配给从0开始的自然数  
+> HalfCauchy分布：X ~ Cauchy(0, scale),Y = |X| ~ HalfCauchy(scale)  
+> HalfNormal分布：X ~ Normal(0, scale), Y = |X| ~ HalfNormal(scale)  
+> InverseGamma分布：X ~ Gamma(concentration, rate), Y = 1 / X ~ InverseGamma(concentration, rate)  
+> 对数正态分布：X ~ Normal(loc, scale), Y = exp(X) ~ LogNormal(loc, scale)  
+> 在Multinomial分布中，logits = ln(probs), 输入的probs会被自动softmax到和为1，然后被对应分配给从0开始的自然数  
+> MultivariateNormal分布中，loc为期望向量（联合分布每个变量x_i取值的期望），covariance_matrix为协方差矩阵。简单地，对一个关于x,y的二元正态分布，loc=[E(X),E(Y)]（不用转置）, covariance_matrix=[[sd(X)^2, sd(X)sd(Y)corr(X,Y)],[sd(X)sd(Y)corr(X,Y), sd(Y)^2]] 
+
+> Independent(base_distribution, reinterpreted_batch_ndims, validate_args=None) 独立同分布（这主要用于改变 log_prob() 结果的形状。例如，要创建与多元正态分布形状相同的对角正态分布）  
+> MixtureSameFamily(mixture_distribution, component_distribution, validate_args=None) MixtureSameFamily 分布实现（批次）混合分布，其中所有组件都来自同一分布类型的不同参数化。它由分类“选择分布”（针对 k 个分量）和分量分布进行参数化，即具有最右侧批次形状（等于 [k]）的分布，该分布对每个（批次）分量进行索引。  
 
 
 ## Tensorboard
 
-### tensorboard --logdir
-指定日志文件夹，打开tensorboard
+### tensorboard --logdir `LOG_DIR`
+(CMD)指定日志文件夹，打开tensorboard
+> 注意，在notebook中(如Jupyter, Colab等)时:  
+> %load_ext tensorboard  
+> %tensorboard --logdir `LOG_DIR`
 
 ### torch.utils.tensorboard.writer.SummaryWriter
 日志写入类。
 
+#### __ init __ (log_dir=None, comment='', purge_step=None, max_queue=10, flush_secs=120, filename_suffix='')
+- log_dir:str – 保存目录位置。默认值为运行/CURRENT_DATETIME_HOSTNAME，每次运行后都会更改。使用分层文件夹结构轻松比较运行之间的情况。例如为每个新实验传递“runs/exp1”、“runs/exp2”等以进行比较。 
+- comment:str – 附加到默认 log_dir 的注释 log_dir 后缀。如果指定了 log_dir，则此参数无效。 
+- purge_step:int – 当日志记录在步骤 T+X 处崩溃并在步骤 T 处重新启动时，任何 global_step 大于或等于 T 的事件都将被清除并在 TensorBoard 中隐藏。请注意，崩溃和恢复的实验应具有相同的 log_dir。 
+- max_queue:int – 在“add”调用之一强制刷新到磁盘之前，待处理事件和摘要的队列大小。默认为十项。 
+- flush_secs:int – 将待处理事件和摘要刷新到磁盘的频率（以秒为单位）。默认为每两分钟一次。 
+
+#### add_scalar(tag, scalar_value, global_step=None, walltime=None, new_style=False, double_precision=False)
+添加标量数据
+- tag:str – 数据标识符 scalar_value (float 或 string/blobname) – 保存的值 global_step (int) – 记录 walltime 的全局步值 (float) – 可选覆盖默认 walltime (time.time())，其纪元后的秒数event new_style (boolean) – 是否使用新样式（张量字段）或旧样式（simple_value 字段）。新样式可以加快数据加载速度。
+- 
 
 
-
-
-
+#### add_hparams(hparam_dict, metric_dict, hparam_domain_discrete=None, run_name=None, global_step=None)
+- hparam_dict:dict – 字典中的每个键值对都是超参数的名称及其对应的值。值的类型可以是 bool、string、float、int 或 None 之一。 
+- metric_dict:dict – 字典中的每个键值对都是指标的名称及其对应的值。请注意，此处使用的键名在张量板记录中应该是唯一的。未指定时，通过 add_scalar 添加的值将显示在 hparam 插件中。
+- hparam_domain_discrete:Optional[Dict[str, List[Any]]] – 一个字典，其中包含超参数的名称以及它们可以保存的所有离散值 
+- run_name:str – 运行的名称，作为 logdir 的一部分包含在内。如果未指定，将使用当前时间戳。 
+- global_step:int – 要记录的全局步值
